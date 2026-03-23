@@ -20,6 +20,24 @@ app.get("/protudo", (res, req) => {
     });
 });
 
+router.get("/:id", async (res, req) => {
+    try {
+        const data = await fs.readFile('data.json', 'utf-8');
+        const json = JSON.parse(data);
+
+        const id = Number(req.params.id);
+
+        const produto = json.produto.find(p => p.id === id);
+
+        if (!produto){
+            res.status(404).json({erro: 'Erro ao ler produtos'});
+        }
+
+    } catch {
+        res.status(500).json({erro: 'Erro interno'})
+    }
+});
+
 app.listen(port, () => {
   console.log(`Servidor rodando na porta https://localhost:${port}`);
 });
