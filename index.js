@@ -38,5 +38,3 @@ router.get("/:id", async (res, req) => {
 app.listen(port, () => {
   console.log(`Servidor rodando na porta https://localhost:${port}`);
 });
-
-module.exports = router;
