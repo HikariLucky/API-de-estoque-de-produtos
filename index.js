@@ -64,6 +64,66 @@ app.post('/produto', async (res, req) => {
     
 });
 
+app.put('/produto/:id', async (req, res) => {
+    try {
+        const data = await fs.readFile('data.json', 'utf-8');
+        const json = JSON.parse(data);
+
+        const id = Number(req.params.id);
+        const { nome, preco } = req.body;
+
+        const index = json.produto.findIndex(p => p.id === id);
+
+        if (index === -1) {
+            return res.status(404).json({ erro: 'Produto não encontrado' });
+        }
+
+        if (nome !== undefined) {
+            json.produto[index].nome = nome;
+        }
+
+        if (preco !== undefined) {
+            json.produto[index].preco = preco;
+        }
+
+        await fs.writeFile('data.json', JSON.stringify(json, null, 2));
+
+        res.json(json.produto[index]);
+
+    } catch (error) {
+        res.status(500).json({ erro: 'Erro ao atualizar o produto' });
+    }
+});
+
+app.delete('/produto/:id', async (req, res) => {
+    try {
+        const data = await fs.readFile('data.json', 'utf-8');
+        const json = JSON.parse(data);
+
+        const id = Number(req.params.id);
+
+        const index = json.produto.findIndex(p => p.id === id);
+
+        if (index === -1) {
+            return res.status(404).json({ erro: 'Produto não encontrado' });
+        }
+
+        const produtoRemovido = json.produto[index];
+
+        json.produto.splice(index, 1);
+
+        await fs.writeFile('data.json', JSON.stringify(json, null, 2));
+
+        res.json({
+            mensagem: 'Produto removido com sucesso',
+            produto: produtoRemovido
+        });
+
+    } catch (error) {
+        res.status(500).json({ erro: 'Erro ao deletar o produto' });
+    }
+});
+
 app.listen(port, () => {
   console.log(`Servidor rodando na porta https://localhost:${port}`);
 });
